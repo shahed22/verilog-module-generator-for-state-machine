@@ -133,3 +133,5 @@ The Verilog Module Generator application follows these steps to create a Verilog
 
 ## License
 This project is licensed under the MIT License.
+<img width="369" alt="image" src="https://github.com/user-attachments/assets/921d4bdf-3330-4b03-9ff0-c33f7b9f0459">
+
