@@ -1,7 +1,7 @@
 # verilog_generator.py
 from graph_utils import generate_state_diagram
 from tkinter import simpledialog, messagebox
-from utils import is_valid_verilog_expression
+import utils
 
 def create_verilog_module(parent, file_name, clock_type, reset_type, input_ports, output_ports, wires, regs,
                           state_name, machine_type):
