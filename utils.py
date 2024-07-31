@@ -6,6 +6,36 @@ def is_valid_verilog_identifier(name):
     """Check if the given name is a valid Verilog identifier."""
     return re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name) is not None
 
+def get_state_machine_states(parent, state_num, seq):
+    """Get the state names and their corresponding encodings for the state machine."""
+    state_name = {}
+    length = len(bin(state_num - 1)) - 2
+    code = ""
+    if seq == 1:
+        encoding_style = get_encoding_style(parent)
+        if encoding_style is None:
+            return state_name
+
+        for i in range(state_num):
+            while True :
+                state = simpledialog.askstring("State Name", f"Enter state {i}name:", parent=parent)
+                if is_valid_verilog_identifier(state):
+                    break
+            if encoding_style == 1:
+                code = format(i, f'0{length}b')
+            elif encoding_style == 2:
+                code = format(grey_converter(i), f'0{length}b')
+            elif encoding_style == 3:
+                code = format(1 << i, f'0{state_num}b')
+            state_name[state] = code
+    else:
+        for i in range(state_num):
+            state = simpledialog.askstring("State Name", "Enter state name:", parent=parent)
+            code = simpledialog.askstring("State Code", "Enter code:", parent=parent)
+            state_name[state] = code
+
+    return state_name
+
 def generate_state_diagram(state_name, file_name):
     """Generate a PNG state diagram from the state machine definition."""
     dot = Digraph(comment='State Machine')
@@ -25,9 +55,50 @@ def generate_state_diagram(state_name, file_name):
     dot.filename = file_name
     dot.render()
 
+def get_encoding_style(parent):
+    """Prompt the user for the encoding style using a dropdown in a popup dialog."""
+    dialog = CustomDialog(parent, "Encoding Style", "Choose encoding style to be used:", ["Binary", "Gray", "One-hot"])
+    parent.wait_window(dialog)
+    encoding_style = dialog.result
+    if encoding_style == "Binary":
+        return 1
+    elif encoding_style == "Gray":
+        return 2
+    elif encoding_style == "One-hot":
+        return 3
+    messagebox.showerror("Invalid Choice", "Invalid choice. Please try again.")
+    return None
+
+
 def grey_converter(n):
     """Convert a binary number to its Gray code equivalent."""
     return n ^ (n >> 1)
+
+
+class CustomDialog(tk.Toplevel):
+    def __init__(self, parent, title, prompt, options):
+        super().__init__(parent)
+        self.transient(parent)
+        self.grab_set()
+        self.title(title)
+
+        tk.Label(self, text=prompt).pack(pady=10)
+
+        self.var = tk.StringVar()
+        self.var.set(options[0])
+
+        self.option_menu = ttk.OptionMenu(self, self.var, options[0], *options)
+        self.option_menu.pack(pady=10)
+
+        self.ok_button = tk.Button(self, text="OK", command=self.on_ok)
+        self.ok_button.pack(pady=10)
+
+        self.result = None
+
+    def on_ok(self):
+        self.result = self.var.get()
+        self.destroy()
+
 
 def parse_ports(ports_str):
     """Parse ports from a string in format (name:size, separated by commas)."""
