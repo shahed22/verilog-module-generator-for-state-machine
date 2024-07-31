@@ -37,7 +37,11 @@ def create_verilog_module(parent, file_name, clock_type, reset_type, input_ports
             if not reset_state:
                 return
 
-        f.write(f"reg [{len(list(state_name.values())[0]) - 1}:0] ps, ns;\n")
+        lent=len(list(state_name.values())[0]) - 1
+        if lent>0:
+            f.write(f"reg [{lent}:0] ps, ns;\n")
+        else:
+            f.write(f"reg ps, ns;\n")
         f.write(f"always @({clock_type} clk or ")
         if reset_type == "rst":
             f.write("posedge ")
@@ -59,7 +63,7 @@ def create_verilog_module(parent, file_name, clock_type, reset_type, input_ports
         k.update(wires)
         k.update(regs)
         write_state_transitions(f, file_name, state_name, k)
-        f.write("\nendcase\n")
+        f.write("\n\tendcase\n")
         f.write("end\n")
 
         f.write(f"always @(ps{(',' + ', '.join(input_ports.keys())) if machine_type == 'Mealy' else ''}) begin\n")
@@ -85,6 +89,7 @@ def create_verilog_module(parent, file_name, clock_type, reset_type, input_ports
             f.write(f"{st};\n")
             f.write("\t\tend\n")
         f.write("\tendcase\n")
+        f.write("end\n")
         f.write("endmodule\n")
 
 def write_ports(f, ports, direction):
