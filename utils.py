@@ -198,11 +198,15 @@ def is_valid_verilog_expression(expr, input_ports):
         tokens.remove('?')
         tokens.remove(':')
     # Check each token
-    for token in tokens[0:len(tokens) - 2]:
+    for token in tokens[0:len(tokens)]:
+        print(token)
         token = token.strip()
         if not token:
             continue
-        if not valid_pattern.match(token) and token not in input_ports.keys() and re.fullmatch(r'^\d+(\.\d+)?$', tokens[-1]) is not None:
+        print(f"valid_pa{valid_pattern.match(token) is None}")
+        print(f"token:{token not in input_ports.keys()}")
+        print(f"match{re.fullmatch(r'^\d+(\.\d+)?$', token) is None}")
+        if  valid_pattern.match(token) is None and token not in input_ports.keys() and re.fullmatch(r'^\d+(\.\d+)?$', token) is None:
             return False
 
     return True
