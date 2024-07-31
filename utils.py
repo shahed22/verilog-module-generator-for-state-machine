@@ -202,7 +202,7 @@ def is_valid_verilog_expression(expr, input_ports):
         token = token.strip()
         if not token:
             continue
-        if not valid_pattern.match(token) and token not in input_ports.keys() and re.fullmatch(r'^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$', tokens[-1]) is not None:
+        if not valid_pattern.match(token) and token not in input_ports.keys() and re.fullmatch(r'^\d+(\.\d+)?$', tokens[-1]) is not None:
             return False
 
     return True
